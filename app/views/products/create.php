@@ -43,7 +43,7 @@ ob_start();
                 <!-- Basic Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Product Name *</label>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Magaca Alaabta *</label>
                         <input type="text" 
                                id="name" 
                                name="name" 
@@ -56,14 +56,14 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="sku" class="block text-sm font-medium text-gray-700">SKU *</label>
+                        <label for="sku" class="block text-sm font-medium text-gray-700">Lambarka Alaabta (SKU) *</label>
                         <input type="text" 
                                id="sku" 
                                name="sku" 
                                value="<?= old('sku') ?>"
                                required 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <p class="mt-1 text-xs text-gray-500">Unique product code for identification</p>
+                        <p class="mt-1 text-xs text-gray-500">Lambar gaar ah oo alaabta lagu aqoonsado</p>
                         <?php if (hasErrors('sku')): ?>
                             <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('sku')) ?></p>
                         <?php endif; ?>
@@ -71,7 +71,7 @@ ob_start();
                 </div>
 
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Sharaxaad</label>
                     <textarea id="description" 
                               name="description" 
                               rows="3" 
@@ -84,11 +84,11 @@ ob_start();
                 <!-- Category and Supplier -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
+                        <label for="category_id" class="block text-sm font-medium text-gray-700">Qaybta</label>
                         <select id="category_id" 
                                 name="category_id" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Select a category</option>
+                            <option value="">Dooro qaybta</option>
                             <?php foreach ($categories as $category): ?>
                                 <option value="<?= $category['id'] ?>" 
                                         <?= old('category_id') == $category['id'] ? 'selected' : '' ?>>
@@ -102,11 +102,11 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="supplier_id" class="block text-sm font-medium text-gray-700">Supplier</label>
+                        <label for="supplier_id" class="block text-sm font-medium text-gray-700">Bixiyaha</label>
                         <select id="supplier_id" 
                                 name="supplier_id" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Select a supplier</option>
+                            <option value="">Dooro bixiyaha</option>
                             <?php foreach ($suppliers as $supplier): ?>
                                 <option value="<?= $supplier['id'] ?>" 
                                         <?= old('supplier_id') == $supplier['id'] ? 'selected' : '' ?>>
@@ -123,7 +123,7 @@ ob_start();
                 <!-- Pricing -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="cost_price" class="block text-sm font-medium text-gray-700">Cost Price</label>
+                        <label for="cost_price" class="block text-sm font-medium text-gray-700">Qiimaha Kharashka</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">$</span>
@@ -142,7 +142,7 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="selling_price" class="block text-sm font-medium text-gray-700">Selling Price *</label>
+                        <label for="selling_price" class="block text-sm font-medium text-gray-700">Qiimaha Iibka *</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">$</span>
@@ -165,7 +165,7 @@ ob_start();
                 <!-- Stock Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="stock_quantity" class="block text-sm font-medium text-gray-700">Initial Stock Quantity *</label>
+                        <label for="stock_quantity" class="block text-sm font-medium text-gray-700">Tirada Bilaabeed ee Bakhaarka *</label>
                         <input type="number" 
                                id="stock_quantity" 
                                name="stock_quantity" 
@@ -179,7 +179,7 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="min_stock_level" class="block text-sm font-medium text-gray-700">Minimum Stock Level *</label>
+                        <label for="min_stock_level" class="block text-sm font-medium text-gray-700">Heerka Ugu Yar ee Bakhaarka *</label>
                         <input type="number" 
                                id="min_stock_level" 
                                name="min_stock_level" 
@@ -187,7 +187,7 @@ ob_start();
                                min="0"
                                required
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <p class="mt-1 text-xs text-gray-500">Alert when stock falls below this level</p>
+                        <p class="mt-1 text-xs text-gray-500">Digniin markii bakhaarka uu ka yar yahay heerkan</p>
                         <?php if (hasErrors('min_stock_level')): ?>
                             <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('min_stock_level')) ?></p>
                         <?php endif; ?>
@@ -197,7 +197,7 @@ ob_start();
                 <!-- Additional Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="barcode" class="block text-sm font-medium text-gray-700">Barcode</label>
+                        <label for="barcode" class="block text-sm font-medium text-gray-700">Koodka Baarkoodka</label>
                         <input type="text" 
                                id="barcode" 
                                name="barcode" 
@@ -209,12 +209,12 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Xaalada</label>
                         <select id="status" 
                                 name="status" 
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                            <option value="active" <?= old('status', 'active') == 'active' ? 'selected' : '' ?>>Active</option>
-                            <option value="inactive" <?= old('status') == 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                            <option value="active" <?= old('status', 'active') == 'active' ? 'selected' : '' ?>>Firfircoon</option>
+                            <option value="inactive" <?= old('status') == 'inactive' ? 'selected' : '' ?>>Ma Firfircoon</option>
                         </select>
                         <?php if (hasErrors('status')): ?>
                             <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('status')) ?></p>
@@ -224,7 +224,7 @@ ob_start();
 
                 <!-- Product Image -->
                 <div>
-                    <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Sawirka Alaabta</label>
                     <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                         <div class="space-y-1 text-center">
                             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -232,12 +232,12 @@ ob_start();
                             </svg>
                             <div class="flex text-sm text-gray-600">
                                 <label for="image" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                    <span>Upload a file</span>
+                                    <span>Soo geli fayl</span>
                                     <input id="image" name="image" type="file" accept="image/*" class="sr-only">
                                 </label>
-                                <p class="pl-1">or drag and drop</p>
+                                <p class="pl-1">ama jiid oo dhig</p>
                             </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                            <p class="text-xs text-gray-500">PNG, JPG, GIF ilaa 5MB</p>
                         </div>
                     </div>
                     <?php if (hasErrors('image')): ?>

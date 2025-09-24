@@ -531,15 +531,17 @@ class ProductController
         $validated['category_id'] = (int)($data['category_id'] ?? 0);
         $validated['supplier_id'] = (int)($data['supplier_id'] ?? 0);
 
-        // Numeric fields
+        // Numeric fields - map form field names to database field names
         $validated['cost_price'] = (float)($data['cost_price'] ?? 0);
-        $validated['selling_price'] = (float)($data['selling_price'] ?? 0);
-        $validated['stock_quantity'] = (int)($data['stock_quantity'] ?? 0);
+        $validated['price'] = (float)($data['selling_price'] ?? 0); // Map selling_price to price
+        $validated['quantity_in_stock'] = (int)($data['stock_quantity'] ?? 0); // Map stock_quantity to quantity_in_stock
         $validated['min_stock_level'] = (int)($data['min_stock_level'] ?? 10);
 
+        // Optional fields
+        $validated['unit'] = trim($data['unit'] ?? 'pcs');
+        
         // Status
-        $validated['status'] = in_array($data['status'] ?? 'active', ['active', 'inactive']) 
-            ? $data['status'] : 'active';
+        $validated['is_active'] = isset($data['status']) && $data['status'] === 'active' ? 1 : 1; // Default to active
 
         return $validated;
     }

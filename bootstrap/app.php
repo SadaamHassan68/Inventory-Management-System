@@ -32,6 +32,16 @@ if (isset($config['app']['timezone'])) {
 require_once APP_ROOT . '/app/utils/Database.php';
 require_once APP_ROOT . '/app/models/BaseModel.php';
 
+// Load controllers explicitly for XAMPP compatibility
+require_once APP_ROOT . '/app/controllers/AuthController.php';
+require_once APP_ROOT . '/app/controllers/DashboardController.php';
+require_once APP_ROOT . '/app/controllers/ProductController.php';
+require_once APP_ROOT . '/app/controllers/CustomerController.php';
+require_once APP_ROOT . '/app/controllers/DebtController.php';
+require_once APP_ROOT . '/app/controllers/SalesController.php';
+require_once APP_ROOT . '/app/controllers/ReportController.php';
+require_once APP_ROOT . '/app/controllers/UserController.php';
+
 /**
  * Simple autoloader for application classes
  */
@@ -239,6 +249,11 @@ function csrfToken() {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
+}
+
+// Alias for template compatibility
+function csrf_token() {
+    return csrfToken();
 }
 
 function csrfField() {
