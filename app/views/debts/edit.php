@@ -1,6 +1,5 @@
-<?php include '../app/views/layouts/app.php'; ?>
 <?php
-$title = $title ?? 'Add Debt';
+$title = $title ?? 'Edit Debt';
 ob_start();
 ?>
 
@@ -8,10 +7,13 @@ ob_start();
     <!-- Page Header -->
     <div class="flex justify-between items-center">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Record New Debt</h1>
-            <p class="text-gray-600">Create a new customer debt record</p>
+            <h1 class="text-2xl font-bold text-gray-900">Edit Debt</h1>
+            <p class="text-gray-600">Update debt information for <?= htmlspecialchars($debt['debt_number']) ?></p>
         </div>
-        <div>
+        <div class="flex space-x-3">
+            <a href="<?= url('/debts/' . $debt['id']) ?>" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-eye mr-2"></i>View Details
+            </a>
             <a href="<?= url('/debts') ?>" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
                 <i class="fas fa-arrow-left mr-2"></i>Back to Debts
             </a>
@@ -31,13 +33,15 @@ ob_start();
         </div>
     <?php endif; ?>
 
-    <!-- Debt Form -->
+    <!-- Debt Edit Form -->
     <div class="bg-white rounded-lg shadow">
-        <form action="<?= url('/debts') ?>" method="POST" class="space-y-6">
+        <form action="<?= url('/debts/' . $debt['id']) ?>" method="POST" class="space-y-6">
             <input type="hidden" name="_token" value="<?= csrf_token() ?>">
+            <input type="hidden" name="_method" value="PUT">
             
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Debt Information</h3>
+                <p class="text-sm text-gray-500 mt-1">Update the debt details below</p>
             </div>
 
             <div class="px-6 space-y-6">
@@ -54,7 +58,7 @@ ob_start();
                             <?php if (!empty($customers)): ?>
                                 <?php foreach ($customers as $customer): ?>
                                     <option value="<?= $customer['id'] ?>" 
-                                            <?= ($selectedCustomer && $selectedCustomer['id'] == $customer['id']) ? 'selected' : '' ?>
+                                            <?= ($debt['customer_id'] == $customer['id']) ? 'selected' : '' ?>
                                             data-phone="<?= htmlspecialchars($customer['phone']) ?>"
                                             data-email="<?= htmlspecialchars($customer['email'] ?? '') ?>"
                                             data-credit-limit="<?= $customer['credit_limit'] ?? 0 ?>"
@@ -70,14 +74,14 @@ ob_start();
                     </div>
 
                     <div>
-                        <label for="debt_number" class="block text-sm font-medium text-gray-700">Debt Number</label>
+                        <label for="debt_number" class="block text-sm font-medium text-gray-700">Debt Number *</label>
                         <input type="text" 
                                id="debt_number" 
                                name="debt_number" 
-                               value="<?= old('debt_number') ?>"
-                               placeholder="Auto-generated if empty"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <p class="mt-1 text-xs text-gray-500">Leave empty to auto-generate</p>
+                               value="<?= htmlspecialchars($debt['debt_number']) ?>"
+                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                               readonly>
+                        <p class="mt-1 text-xs text-gray-500">Debt number cannot be changed</p>
                         <?php if (hasErrors('debt_number')): ?>
                             <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('debt_number')) ?></p>
                         <?php endif; ?>
@@ -87,7 +91,7 @@ ob_start();
                 <!-- Financial Information -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="original_amount" class="block text-sm font-medium text-gray-700">Amount *</label>
+                        <label for="original_amount" class="block text-sm font-medium text-gray-700">Original Amount *</label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">$</span>
@@ -95,7 +99,7 @@ ob_start();
                             <input type="number" 
                                    id="original_amount" 
                                    name="original_amount" 
-                                   value="<?= old('original_amount') ?>"
+                                   value="<?= $debt['original_amount'] ?>"
                                    step="0.01" 
                                    min="0.01"
                                    required
@@ -107,16 +111,54 @@ ob_start();
                     </div>
 
                     <div>
+                        <label for="remaining_amount" class="block text-sm font-medium text-gray-700">Remaining Amount</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input type="number" 
+                                   id="remaining_amount" 
+                                   name="remaining_amount" 
+                                   value="<?= $debt['remaining_amount'] ?>"
+                                   step="0.01" 
+                                   min="0"
+                                   max="<?= $debt['original_amount'] ?>"
+                                   class="pl-7 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Must not exceed original amount</p>
+                        <?php if (hasErrors('remaining_amount')): ?>
+                            <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('remaining_amount')) ?></p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div>
                         <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date *</label>
                         <input type="date" 
                                id="due_date" 
                                name="due_date" 
-                               value="<?= old('due_date', date('Y-m-d', strtotime('+30 days'))) ?>"
-                               min="<?= date('Y-m-d') ?>"
+                               value="<?= $debt['due_date'] ?>"
                                required
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <?php if (hasErrors('due_date')): ?>
                             <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('due_date')) ?></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Status and Sale Reference -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                        <select id="status" 
+                                name="status" 
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="unpaid" <?= $debt['status'] == 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
+                            <option value="partially_paid" <?= $debt['status'] == 'partially_paid' ? 'selected' : '' ?>>Partially Paid</option>
+                            <option value="paid" <?= $debt['status'] == 'paid' ? 'selected' : '' ?>>Paid</option>
+                            <option value="overdue" <?= $debt['status'] == 'overdue' ? 'selected' : '' ?>>Overdue</option>
+                        </select>
+                        <?php if (hasErrors('status')): ?>
+                            <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('status')) ?></p>
                         <?php endif; ?>
                     </div>
 
@@ -125,7 +167,7 @@ ob_start();
                         <input type="number" 
                                id="sale_id" 
                                name="sale_id" 
-                               value="<?= old('sale_id') ?>"
+                               value="<?= $debt['sale_id'] ?? '' ?>"
                                placeholder="Optional"
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         <p class="mt-1 text-xs text-gray-500">Reference to related sale</p>
@@ -142,7 +184,7 @@ ob_start();
                               name="description" 
                               rows="2" 
                               placeholder="Brief description of the debt..."
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"><?= old('description') ?></textarea>
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($debt['description'] ?? '') ?></textarea>
                     <?php if (hasErrors('description')): ?>
                         <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('description')) ?></p>
                     <?php endif; ?>
@@ -154,7 +196,7 @@ ob_start();
                               name="notes" 
                               rows="3" 
                               placeholder="Additional notes or payment terms..."
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"><?= old('notes') ?></textarea>
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"><?= htmlspecialchars($debt['notes'] ?? '') ?></textarea>
                     <?php if (hasErrors('notes')): ?>
                         <p class="mt-1 text-sm text-red-600"><?= implode(', ', getErrors('notes')) ?></p>
                     <?php endif; ?>
@@ -163,18 +205,56 @@ ob_start();
 
             <!-- Form Actions -->
             <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-                <a href="<?= url('/debts') ?>" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <a href="<?= url('/debts/' . $debt['id']) ?>" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Cancel
                 </a>
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-                    <i class="fas fa-save mr-2"></i>Record Debt
+                    <i class="fas fa-save mr-2"></i>Update Debt
                 </button>
             </div>
         </form>
     </div>
 
+    <!-- Current Debt Summary -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Current Debt Summary</h3>
+        </div>
+        <div class="px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <p class="text-sm font-medium text-gray-500">Original Amount</p>
+                    <p class="text-lg font-bold text-gray-900">$<?= number_format($debt['original_amount'], 2) ?></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-medium text-gray-500">Remaining Amount</p>
+                    <p class="text-lg font-bold text-red-600">$<?= number_format($debt['remaining_amount'], 2) ?></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-medium text-gray-500">Paid Amount</p>
+                    <p class="text-lg font-bold text-green-600">$<?= number_format($debt['original_amount'] - $debt['remaining_amount'], 2) ?></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm font-medium text-gray-500">Status</p>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                 <?php
+                                 switch($debt['status']) {
+                                     case 'paid': echo 'bg-green-100 text-green-800'; break;
+                                     case 'partially_paid': echo 'bg-yellow-100 text-yellow-800'; break;
+                                     case 'unpaid': echo 'bg-blue-100 text-blue-800'; break;
+                                     case 'overdue': echo 'bg-red-100 text-red-800'; break;
+                                     default: echo 'bg-gray-100 text-gray-800';
+                                 }
+                                 ?>">
+                        <?= ucfirst(str_replace('_', ' ', $debt['status'])) ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Customer Information Panel -->
-    <div id="customerInfoPanel" class="bg-white rounded-lg shadow mt-6" style="display: none;">
+    <div id="customerInfoPanel" class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-medium text-gray-900">
                 <i class="fas fa-user mr-2 text-blue-500"></i>Customer Information
@@ -201,110 +281,64 @@ ob_start();
             </div>
         </div>
     </div>
-
-    <!-- Credit Warning Panel -->
-    <div id="creditWarning" class="bg-yellow-50 border border-yellow-200 rounded-lg mt-6" style="display: none;">
-        <div class="px-6 py-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-exclamation-triangle text-yellow-400"></i>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-yellow-800">Credit Limit Warning</h3>
-                    <div class="mt-2 text-sm text-yellow-700">
-                        <p>This debt will exceed the customer's credit limit.</p>
-                        <div id="creditDetails" class="mt-2 text-xs"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const customerSelect = document.getElementById('customer_id');
-    const customerPanel = document.getElementById('customerInfoPanel');
-    const customerPhone = document.getElementById('customerPhone');
-    const customerEmail = document.getElementById('customerEmail');
-    const customerCreditLimit = document.getElementById('customerCreditLimit');
-    const customerBalance = document.getElementById('customerBalance');
-    const originalAmount = document.getElementById('original_amount');
-    const creditWarning = document.getElementById('creditWarning');
-    const creditDetails = document.getElementById('creditDetails');
-
+    const customerInfoPanel = document.getElementById('customerInfoPanel');
+    
     function updateCustomerInfo() {
         const selectedOption = customerSelect.options[customerSelect.selectedIndex];
         
         if (selectedOption.value) {
-            customerPhone.textContent = selectedOption.dataset.phone || '-';
-            customerEmail.textContent = selectedOption.dataset.email || '-';
-            customerCreditLimit.textContent = '$' + parseFloat(selectedOption.dataset.creditLimit || 0).toFixed(2);
-            customerBalance.textContent = '$' + parseFloat(selectedOption.dataset.currentBalance || 0).toFixed(2);
-            customerPanel.style.display = 'block';
+            const phone = selectedOption.dataset.phone || '-';
+            const email = selectedOption.dataset.email || '-';
+            const creditLimit = parseFloat(selectedOption.dataset.creditLimit) || 0;
+            const currentBalance = parseFloat(selectedOption.dataset.currentBalance) || 0;
             
-            checkCreditLimit();
+            document.getElementById('customerPhone').textContent = phone;
+            document.getElementById('customerEmail').textContent = email;
+            document.getElementById('customerCreditLimit').textContent = '$' + creditLimit.toFixed(2);
+            document.getElementById('customerBalance').textContent = '$' + currentBalance.toFixed(2);
+            
+            customerInfoPanel.style.display = 'block';
         } else {
-            customerPanel.style.display = 'none';
-            creditWarning.style.display = 'none';
+            customerInfoPanel.style.display = 'none';
         }
     }
-
-    function checkCreditLimit() {
-        const selectedOption = customerSelect.options[customerSelect.selectedIndex];
-        const amount = parseFloat(originalAmount.value) || 0;
-        
-        if (selectedOption.value && amount > 0) {
-            const creditLimit = parseFloat(selectedOption.dataset.creditLimit || 0);
-            const currentBalance = parseFloat(selectedOption.dataset.currentBalance || 0);
-            const newBalance = currentBalance + amount;
-            
-            if (newBalance > creditLimit && creditLimit > 0) {
-                creditDetails.innerHTML = `
-                    <strong>Current Balance:</strong> $${currentBalance.toFixed(2)}<br>
-                    <strong>New Debt:</strong> $${amount.toFixed(2)}<br>
-                    <strong>New Total:</strong> $${newBalance.toFixed(2)}<br>
-                    <strong>Credit Limit:</strong> $${creditLimit.toFixed(2)}<br>
-                    <strong>Over Limit:</strong> $${(newBalance - creditLimit).toFixed(2)}
-                `;
-                creditWarning.style.display = 'block';
-            } else {
-                creditWarning.style.display = 'none';
-            }
-        } else {
-            creditWarning.style.display = 'none';
-        }
-    }
-
+    
+    // Update customer info on page load
+    updateCustomerInfo();
+    
+    // Update customer info when selection changes
     customerSelect.addEventListener('change', updateCustomerInfo);
-    originalAmount.addEventListener('input', checkCreditLimit);
-
-    // Initialize if customer is pre-selected
-    if (customerSelect.value) {
-        updateCustomerInfo();
+    
+    // Validate remaining amount
+    const originalAmountInput = document.getElementById('original_amount');
+    const remainingAmountInput = document.getElementById('remaining_amount');
+    
+    function validateRemainingAmount() {
+        const originalAmount = parseFloat(originalAmountInput.value) || 0;
+        const remainingAmount = parseFloat(remainingAmountInput.value) || 0;
+        
+        if (remainingAmount > originalAmount) {
+            remainingAmountInput.setCustomValidity('Remaining amount cannot exceed original amount');
+        } else {
+            remainingAmountInput.setCustomValidity('');
+        }
     }
-
-    // Auto-focus amount after customer selection
-    customerSelect.addEventListener('change', function() {
-        if (this.value) {
-            setTimeout(() => originalAmount.focus(), 100);
-        }
+    
+    originalAmountInput.addEventListener('input', function() {
+        remainingAmountInput.max = this.value;
+        validateRemainingAmount();
     });
-
-    // Auto-format currency inputs
-    originalAmount.addEventListener('input', function() {
-        let value = this.value;
-        if (value.includes('.')) {
-            let parts = value.split('.');
-            if (parts[1].length > 2) {
-                this.value = parts[0] + '.' + parts[1].substring(0, 2);
-            }
-        }
-    });
+    
+    remainingAmountInput.addEventListener('input', validateRemainingAmount);
 });
 </script>
 
 <?php
 $content = ob_get_clean();
-include APP_ROOT . '/app/views/layouts/app.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

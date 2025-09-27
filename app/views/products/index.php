@@ -189,6 +189,17 @@ ob_start();
                                                 class="text-red-600 hover:text-red-900" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        <?php if (($product['is_active'] ?? 1)): ?>
+                                            <button onclick="deactivateProduct(<?= $product['id'] ?>, '<?= htmlspecialchars($product['name']) ?>')" 
+                                                    class="text-yellow-600 hover:text-yellow-900" title="Deactivate">
+                                                <i class="fas fa-times-circle"></i>
+                                            </button>
+                                        <?php else: ?>
+                                            <button onclick="reactivateProduct(<?= $product['id'] ?>, '<?= htmlspecialchars($product['name']) ?>')" 
+                                                    class="text-green-600 hover:text-green-900" title="Reactivate">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -269,6 +280,42 @@ function deleteProduct(id, name) {
     document.getElementById('deleteProductName').textContent = name;
     document.getElementById('deleteForm').action = '<?= url('products/') ?>' + id;
     document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function deactivateProduct(id, name) {
+    if (confirm('Are you sure you want to deactivate "' + name + '"? This will make the product unavailable for new sales.')) {
+        // Create a form dynamically and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?= url('products/') ?>' + id + '/deactivate';
+        
+        const csrfField = document.createElement('input');
+        csrfField.type = 'hidden';
+        csrfField.name = '_token';
+        csrfField.value = '<?= csrfToken() ?>';
+        form.appendChild(csrfField);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function reactivateProduct(id, name) {
+    if (confirm('Are you sure you want to reactivate "' + name + '"? This will make the product available for sales again.')) {
+        // Create a form dynamically and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '<?= url('products/') ?>' + id + '/reactivate';
+        
+        const csrfField = document.createElement('input');
+        csrfField.type = 'hidden';
+        csrfField.name = '_token';
+        csrfField.value = '<?= csrfToken() ?>';
+        form.appendChild(csrfField);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 function closeDeleteModal() {

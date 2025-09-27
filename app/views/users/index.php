@@ -1,273 +1,249 @@
-<?php include '../app/views/layouts/app.php'; ?>
+<?php
+$title = $title ?? 'Isticmaalayaasha';
+ob_start();
+?>
 
-<div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">
-            <i class="fas fa-users"></i> <?= htmlspecialchars($title) ?>
-        </h1>
-        <a href="<?= url('/users/create') ?>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50"></i> Add New User
-        </a>
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Isticmaalayaasha</h1>
+            <p class="text-gray-600">Maamul isticmaalayaasha nidaamka</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="<?= url('/users/create') ?>" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i>Ku dar Isticmaale
+            </a>
+        </div>
     </div>
 
+    <!-- Flash Messages -->
+    <?php if (hasFlash('success')): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <?= getFlash('success') ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (hasFlash('error')): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <?= getFlash('error') ?>
+        </div>
+    <?php endif; ?>
+
     <!-- User Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Active Users
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['total_active'] ?? 0) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-users fa-2x text-gray-300"></i>
-                        </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Wadarta Isticmaalayaasha Firfircoon</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= number_format($stats['total_active'] ?? 0) ?></p>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Administrators
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['admins'] ?? 0) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user-shield fa-2x text-gray-300"></i>
-                        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-shield text-red-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Maamulayaasha</p>
+                    <p class="text-2xl font-bold text-red-600"><?= number_format($stats['admins'] ?? 0) ?></p>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Staff Members
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['staff'] ?? 0) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-user-tie fa-2x text-gray-300"></i>
-                        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-tie text-green-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Shaqaalaha</p>
+                    <p class="text-2xl font-bold text-green-600"><?= number_format($stats['staff'] ?? 0) ?></p>
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Recent Logins (7 days)
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['recent_logins'] ?? 0) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-sign-in-alt fa-2x text-gray-300"></i>
-                        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt text-yellow-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Galitaannada Dhawaan (7 maalmod)</p>
+                    <p class="text-2xl font-bold text-yellow-600"><?= number_format($stats['recent_logins'] ?? 0) ?></p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="m-0 font-weight-bold text-primary">Search Users</h6>
+    <div class="bg-white rounded-lg shadow p-6">
+        <form method="GET" action="<?= url('/users') ?>" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Raadi</label>
+                    <input type="text" 
+                           id="search" 
+                           name="search" 
+                           value="<?= htmlspecialchars($filters['search'] ?? '') ?>"
+                           placeholder="Ku raadi magaca isticmaalaha, email-ka, ama magaca buuxa..." 
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div class="flex items-end space-x-2">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-search mr-2"></i>Raadi
+                    </button>
+                    <?php if (!empty($filters['search'])): ?>
+                        <a href="<?= url('/users') ?>" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                            <i class="fas fa-times mr-2"></i>Nadiifi
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
-        </div>
-        <div class="card-body">
-            <form method="GET" action="<?= url('/users') ?>">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="search" 
-                                   placeholder="Search by username, email, or full name..." 
-                                   value="<?= htmlspecialchars($filters['search']) ?>">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                        <?php if (!empty($filters['search'])): ?>
-                            <a href="<?= url('/users') ?>" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Clear
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
 
     <!-- Users Table -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Users List</h6>
-        </div>
-        <div class="card-body">
-            <?php if (empty($users)): ?>
-                <div class="text-center py-4">
-                    <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
-                    <p class="text-gray-500">No users found.</p>
-                    <a href="<?= url('/users/create') ?>" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add First User
-                    </a>
-                </div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Phone</th>
-                                <th>Status</th>
-                                <th>Last Login</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($users as $user): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= htmlspecialchars($user['username']) ?></strong>
-                                    </td>
-                                    <td><?= htmlspecialchars($user['full_name']) ?></td>
-                                    <td>
-                                        <a href="mailto:<?= htmlspecialchars($user['email']) ?>">
-                                            <?= htmlspecialchars($user['email']) ?>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-<?= $user['role'] === 'admin' ? 'danger' : 'info' ?>">
-                                            <?= ucfirst($user['role']) ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <?php if ($user['phone']): ?>
-                                            <a href="tel:<?= htmlspecialchars($user['phone']) ?>">
-                                                <?= htmlspecialchars($user['phone']) ?>
-                                            </a>
-                                        <?php else: ?>
-                                            <span class="text-muted">-</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($user['is_active']): ?>
-                                            <span class="badge badge-success">Active</span>
-                                        <?php else: ?>
-                                            <span class="badge badge-secondary">Inactive</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($user['last_login']): ?>
-                                            <small><?= date('M j, Y g:i A', strtotime($user['last_login'])) ?></small>
-                                        <?php else: ?>
-                                            <span class="text-muted">Never</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" 
-                                                    data-toggle="dropdown">
-                                                Actions
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="<?= url('/users/' . $user['id'] . '/edit') ?>">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                                <?php if ($user['id'] != auth()['id']): ?>
-                                                    <div class="dropdown-divider"></div>
-                                                    <form method="POST" action="<?= url('/users/' . $user['id']) ?>" 
-                                                          onsubmit="return confirm('Are you sure you want to deactivate this user?')"
-                                                          style="display: inline;">
-                                                        <input type="hidden" name="_method" value="DELETE">
-                                                        <input type="hidden" name="_token" value="<?= csrf_token() ?>">
-                                                        <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="fas fa-user-slash"></i> Deactivate
-                                                        </button>
-                                                    </form>
-                                                <?php endif; ?>
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Isticmaale</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xiriir</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doorka</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Xaalada</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Galitaanka Ugu Danbeysa</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ficilada</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <?php if (empty($users)): ?>
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
+                                    <p class="text-lg font-medium">Isticmaalayaal ma jiraan</p>
+                                    <p class="text-sm">Ku bilow ku daridda isticmaalaha koowaad</p>
+                                    <a href="<?= url('/users/create') ?>" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        <i class="fas fa-plus mr-2"></i>Ku dar Isticmaale
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($users as $user): ?>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-medium">
+                                                <?= strtoupper(substr($user['full_name'], 0, 2)) ?>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                <?php if ($pagination['total_pages'] > 1): ?>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <div>
-                            <small class="text-muted">
-                                Showing <?= (($pagination['current_page'] - 1) * $pagination['per_page']) + 1 ?> 
-                                to <?= min($pagination['current_page'] * $pagination['per_page'], $pagination['total_items']) ?> 
-                                of <?= $pagination['total_items'] ?> users
-                            </small>
-                        </div>
-                        <nav>
-                            <ul class="pagination mb-0">
-                                <?php if ($pagination['current_page'] > 1): ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="<?= url('/users?page=' . ($pagination['current_page'] - 1) . (!empty($filters['search']) ? '&search=' . urlencode($filters['search']) : '')) ?>">
-                                            Previous
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                <?= htmlspecialchars($user['full_name']) ?>
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                @<?= htmlspecialchars($user['username']) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        <i class="fas fa-envelope text-gray-400 mr-1"></i>
+                                        <a href="mailto:<?= htmlspecialchars($user['email']) ?>" class="hover:text-blue-600">
+                                            <?= htmlspecialchars($user['email']) ?>
                                         </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php for ($i = max(1, $pagination['current_page'] - 2); $i <= min($pagination['total_pages'], $pagination['current_page'] + 2); $i++): ?>
-                                    <li class="page-item <?= $i == $pagination['current_page'] ? 'active' : '' ?>">
-                                        <a class="page-link" href="<?= url('/users?page=' . $i . (!empty($filters['search']) ? '&search=' . urlencode($filters['search']) : '')) ?>">
-                                            <?= $i ?>
+                                    </div>
+                                    <?php if ($user['phone']): ?>
+                                        <div class="text-sm text-gray-500">
+                                            <i class="fas fa-phone text-gray-400 mr-1"></i>
+                                            <a href="tel:<?= htmlspecialchars($user['phone']) ?>" class="hover:text-blue-600">
+                                                <?= htmlspecialchars($user['phone']) ?>
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <?php if ($user['role'] === 'admin'): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-user-shield mr-1"></i>Maamule
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <i class="fas fa-user-tie mr-1"></i>Shaqaale
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <?php if ($user['is_active']): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>Firfircoon
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-times-circle mr-1"></i>Ma Firfircoon
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <?php if ($user['last_login']): ?>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            <?= date('M j, Y g:i A', strtotime($user['last_login'])) ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="text-gray-400">Weligii ma galin</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <a href="<?= url('/users/' . $user['id'] . '/edit') ?>" 
+                                           class="text-blue-600 hover:text-blue-900" title="Wax ka beddel">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                    </li>
-                                <?php endfor; ?>
+                                        <?php if ($user['id'] != auth()['id']): ?>
+                                            <form method="POST" action="<?= url('/users/' . $user['id']) ?>" 
+                                                  onsubmit="return confirm('Ma hubtaa inaad damisid isticmaalahan?')"
+                                                  class="inline">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="<?= csrf_token() ?>">
+                                                <button type="submit" class="text-red-600 hover:text-red-900" title="Damis">
+                                                    <i class="fas fa-user-slash"></i>
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
 
-                                <?php if ($pagination['current_page'] < $pagination['total_pages']): ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="<?= url('/users?page=' . ($pagination['current_page'] + 1) . (!empty($filters['search']) ? '&search=' . urlencode($filters['search']) : '')) ?>">
-                                            Next
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </nav>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
         </div>
     </div>
 </div>
+
+<?php
+$content = ob_get_clean();
+include APP_ROOT . '/app/views/layouts/app.php';
+?>

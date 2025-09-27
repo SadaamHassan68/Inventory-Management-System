@@ -147,7 +147,7 @@ class ProductController
             // Log activity
             logActivity('product_created', 'products', $productId);
             
-            setFlash('success', 'Product created successfully');
+            setFlash('success', 'Product "' . htmlspecialchars($data['name']) . '" created successfully');
             redirect('/products');
         } catch (Exception $e) {
             error_log("Error creating product: " . $e->getMessage());
@@ -266,7 +266,7 @@ class ProductController
             // Log activity
             logActivity('product_updated', 'products', $id);
             
-            setFlash('success', 'Product updated successfully');
+            setFlash('success', 'Product "' . htmlspecialchars($data['name']) . '" updated successfully');
             redirect('/products');
         } catch (Exception $e) {
             error_log("Error updating product: " . $e->getMessage());
@@ -304,21 +304,42 @@ class ProductController
         }
 
         try {
+            // Check if product can be safely deleted
+            $canDelete = $this->checkProductCanBeDeleted($id);
+            if (!$canDelete['can_delete']) {
+                setFlash('error', $canDelete['message']);
+                redirect('/products');
+                return;
+            }
+
+            // Begin transaction for safe deletion
+            $this->productModel->beginTransaction();
+            
             // Delete image if exists
             if (!empty($product['image']) && file_exists('uploads/' . $product['image'])) {
                 unlink('uploads/' . $product['image']);
             }
 
+            // Delete the product
             $this->productModel->delete($id);
             
             // Log activity
             logActivity('product_deleted', 'products', $id);
             
-            setFlash('success', 'Product deleted successfully');
+            $this->productModel->commit();
+            setFlash('success', 'Product "' . htmlspecialchars($product['name']) . '" deleted successfully');
             redirect('/products');
         } catch (Exception $e) {
+            $this->productModel->rollback();
             error_log("Error deleting product: " . $e->getMessage());
-            setFlash('error', 'Failed to delete product');
+            
+            // Provide more specific error messages based on the exception
+            if (strpos($e->getMessage(), 'foreign key constraint') !== false || 
+                strpos($e->getMessage(), 'cannot delete') !== false) {
+                setFlash('error', 'Cannot delete this product because it has been used in sales or stock movements. Consider deactivating it instead.');
+            } else {
+                setFlash('error', 'Failed to delete product: ' . $e->getMessage());
+            }
             redirect('/products');
         }
     }
@@ -544,6 +565,143 @@ class ProductController
         $validated['is_active'] = isset($data['status']) && $data['status'] === 'active' ? 1 : 1; // Default to active
 
         return $validated;
+    }
+
+    /**
+     * Soft delete (deactivate) a product
+     */
+    public function deactivate($id)
+    {
+        // Check permission
+        if (!isAdmin()) {
+            setFlash('error', 'Access denied. Admin privileges required.');
+            redirect('/products');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('/products');
+            return;
+        }
+
+        $product = $this->productModel->find($id);
+        if (!$product) {
+            setFlash('error', 'Product not found');
+            redirect('/products');
+            return;
+        }
+
+        // Validate CSRF token
+        if (!verifyCsrfToken($_POST['_token'] ?? '')) {
+            setFlash('error', 'Invalid security token. Please try again.');
+            redirect('/products');
+            return;
+        }
+
+        try {
+            $this->productModel->update($id, ['is_active' => false]);
+            
+            // Log activity
+            logActivity('product_deactivated', 'products', $id);
+            
+            setFlash('success', 'Product "' . htmlspecialchars($product['name']) . '" has been deactivated successfully');
+            redirect('/products');
+        } catch (Exception $e) {
+            error_log("Error deactivating product: " . $e->getMessage());
+            setFlash('error', 'Failed to deactivate product: ' . $e->getMessage());
+            redirect('/products');
+        }
+    }
+
+    /**
+     * Reactivate a product
+     */
+    public function reactivate($id)
+    {
+        // Check permission
+        if (!isAdmin()) {
+            setFlash('error', 'Access denied. Admin privileges required.');
+            redirect('/products');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('/products');
+            return;
+        }
+
+        $product = $this->productModel->find($id);
+        if (!$product) {
+            setFlash('error', 'Product not found');
+            redirect('/products');
+            return;
+        }
+
+        // Validate CSRF token
+        if (!verifyCsrfToken($_POST['_token'] ?? '')) {
+            setFlash('error', 'Invalid security token. Please try again.');
+            redirect('/products');
+            return;
+        }
+
+        try {
+            $this->productModel->update($id, ['is_active' => true]);
+            
+            // Log activity
+            logActivity('product_reactivated', 'products', $id);
+            
+            setFlash('success', 'Product "' . htmlspecialchars($product['name']) . '" has been reactivated successfully');
+            redirect('/products');
+        } catch (Exception $e) {
+            error_log("Error reactivating product: " . $e->getMessage());
+            setFlash('error', 'Failed to reactivate product: ' . $e->getMessage());
+            redirect('/products');
+        }
+    }
+
+    /**
+     * Check if a product can be safely deleted
+     * Returns array with 'can_delete' boolean and 'message' string
+     */
+    private function checkProductCanBeDeleted($productId)
+    {
+        try {
+            $db = $this->productModel->getDb();
+            
+            // Check if product has sale items
+            $saleItems = $db->fetch(
+                "SELECT COUNT(*) as count FROM sale_items WHERE product_id = :product_id",
+                ['product_id' => $productId]
+            );
+            
+            if ($saleItems['count'] > 0) {
+                return [
+                    'can_delete' => false,
+                    'message' => 'Cannot delete this product because it has been sold (' . $saleItems['count'] . ' sale record(s)). Consider deactivating the product instead.'
+                ];
+            }
+            
+            // Check if product has stock movements
+            $stockMovements = $db->fetch(
+                "SELECT COUNT(*) as count FROM stock_movements WHERE product_id = :product_id",
+                ['product_id' => $productId]
+            );
+            
+            if ($stockMovements['count'] > 0) {
+                return [
+                    'can_delete' => false,
+                    'message' => 'Cannot delete this product because it has stock movement history (' . $stockMovements['count'] . ' movement(s)). Consider deactivating the product instead.'
+                ];
+            }
+            
+            return ['can_delete' => true, 'message' => ''];
+            
+        } catch (Exception $e) {
+            return [
+                'can_delete' => false,
+                'message' => 'Error checking product dependencies: ' . $e->getMessage()
+            ];
+        }
     }
 
     private function uploadProductImage($file)

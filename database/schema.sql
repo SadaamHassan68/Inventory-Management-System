@@ -238,7 +238,21 @@ INSERT INTO categories (name, description) VALUES
 ('Food & Beverages', 'Food and drink products'),
 ('Books', 'Books and educational materials'),
 ('Home & Garden', 'Home improvement and garden supplies'),
-('Sports', 'Sports equipment and accessories');
+('Sports', 'Sports equipment and accessories'),
+('Health & Beauty', 'Health care and beauty products'),
+('Automotive', 'Car parts and automotive accessories'),
+('Office Supplies', 'Office and business supplies'),
+('Tools & Hardware', 'Tools and hardware equipment'),
+('Toys & Games', 'Children toys and games'),
+('Jewelry & Watches', 'Jewelry and timepieces'),
+('Music & Movies', 'Audio, video and entertainment'),
+('Pet Supplies', 'Pet food and accessories'),
+('Travel & Luggage', 'Travel gear and luggage'),
+('Mobile & Accessories', 'Mobile phones and accessories'),
+('Computers & Software', 'Computers and software'),
+('Kitchen & Dining', 'Kitchen appliances and dining items'),
+('Furniture', 'Home and office furniture'),
+('Footwear', 'Shoes and sandals');
 
 -- Insert default suppliers
 INSERT INTO suppliers (name, contact_person, email, phone, address) VALUES

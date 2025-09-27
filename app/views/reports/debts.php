@@ -166,13 +166,13 @@ ob_start();
                                     <div class="text-xs text-gray-500"><?= htmlspecialchars($debt['customer_code']) ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $<?= number_format($debt['total_amount'], 2) ?>
+                                    $<?= number_format($debt['original_amount'], 2) ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    $<?= number_format($debt['paid_amount'], 2) ?>
+                                    $<?= number_format($debt['original_amount'] - $debt['remaining_amount'], 2) ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    $<?= number_format($debt['total_amount'] - $debt['paid_amount'], 2) ?>
+                                    $<?= number_format($debt['remaining_amount'], 2) ?>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     <div class="<?= $debt['is_overdue'] ? 'text-red-600 font-medium' : '' ?>">
@@ -210,5 +210,5 @@ ob_start();
 
 <?php
 $content = ob_get_clean();
-include APP_ROOT . '/app/views/layouts/app.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

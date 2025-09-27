@@ -30,6 +30,9 @@ $router->post('/logout', 'AuthController@logout');
 
 // Protected routes
 $router->get('/dashboard', 'DashboardController@index');
+$router->get('/profile', 'AuthController@profile');
+$router->post('/profile', 'AuthController@updateProfile');
+$router->post('/profile/change-password', 'AuthController@changePassword');
 
 // Product routes
 $router->get('/products', 'ProductController@index');
@@ -39,6 +42,8 @@ $router->get('/products/{id}', 'ProductController@show');
 $router->get('/products/{id}/edit', 'ProductController@edit');
 $router->put('/products/{id}', 'ProductController@update');
 $router->delete('/products/{id}', 'ProductController@delete');
+$router->post('/products/{id}/deactivate', 'ProductController@deactivate');
+$router->post('/products/{id}/reactivate', 'ProductController@reactivate');
 $router->get('/products/low-stock', 'ProductController@lowStock');
 $router->post('/products/import', 'ProductController@import');
 $router->get('/products/export', 'ProductController@export');
@@ -81,6 +86,7 @@ $router->get('/reports/inventory', 'ReportController@inventory');
 $router->get('/reports/debts', 'ReportController@debts');
 $router->get('/reports/customers', 'ReportController@customers');
 
+// Category routes
 // Category routes
 $router->get('/categories', 'CategoryController@index');
 $router->post('/categories', 'CategoryController@store');

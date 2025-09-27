@@ -1,259 +1,349 @@
-<?php include '../app/views/layouts/app.php'; ?>
+<?php
+$title = $title ?? 'Deynta';
+ob_start();
+?>
 
-<div class="container-fluid">
+<div class="space-y-6">
     <!-- Page Header -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <div class="flex justify-between items-center">
         <div>
-            <h1 class="h3 mb-0 text-gray-800">
-                <i class="fas fa-file-invoice-dollar"></i> <?= htmlspecialchars($title) ?>
-            </h1>
-            <p class="text-muted mb-0">Manage customer debts and payment tracking</p>
+            <h1 class="text-2xl font-bold text-gray-900">Deynta</h1>
+            <p class="text-gray-600">Maamul deynta macaamiisha iyo la socodka lacag bixinta</p>
         </div>
-        <div class="btn-group">
+        <div class="flex space-x-3">
             <?php if (isAdmin() || isStaff()): ?>
-                <a href="<?= url('/debts/create') ?>" class="btn btn-primary shadow-sm">
-                    <i class="fas fa-plus fa-sm text-white-50"></i> Record New Debt
+                <a href="<?= url('/debts/create') ?>" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>Diiwaan geli Deyn Cusub
                 </a>
             <?php endif; ?>
-            <a href="<?= url('/debts/overdue') ?>" class="btn btn-warning shadow-sm">
-                <i class="fas fa-exclamation-triangle fa-sm"></i> Overdue
+            <a href="<?= url('/debts/overdue') ?>" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Dhacay
             </a>
-            <a href="<?= url('/debts/export') ?>" class="btn btn-success shadow-sm">
-                <i class="fas fa-download fa-sm"></i> Export
+            <a href="<?= url('/debts/export') ?>" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                <i class="fas fa-download mr-2"></i>Soo deji
             </a>
         </div>
     </div>
 
-    <!-- Summary Cards Row -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Debts
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['total_debts'] ?? 0) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
-                        </div>
+    <!-- Flash Messages -->
+    <?php if (hasFlash('success')): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            <?= getFlash('success') ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php if (hasFlash('error')): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <?= getFlash('error') ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-file-invoice text-blue-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Wadarta Deynta</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= number_format($stats['total_debts'] ?? 0) ?></p>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Outstanding Amount
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                $<?= number_format($stats['total_outstanding_amount'] ?? 0, 2) ?>
-                            </div>
-                            <div class="text-xs text-warning">
-                                <?= number_format($stats['outstanding_debts'] ?? 0) ?> debts
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
-                        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Lacagta aan la bixin</p>
+                    <p class="text-2xl font-bold text-orange-600">$<?= number_format($stats['total_outstanding_amount'] ?? 0, 2) ?></p>
+                    <p class="text-xs text-orange-600"><?= number_format($stats['outstanding_debts'] ?? 0) ?> deyn</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Overdue Debts
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['overdue_debts'] ?? 0) ?>
-                            </div>
-                            <div class="text-xs text-danger">
-                                $<?= number_format($stats['overdue_amount'] ?? 0, 2) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <a href="<?= url('/debts/overdue') ?>" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-eye fa-sm"></i> View Details
-                        </a>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-red-600 text-xl"></i>
                     </div>
                 </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Deynta Dhacday</p>
+                    <p class="text-2xl font-bold text-red-600"><?= number_format($stats['overdue_debts'] ?? 0) ?></p>
+                    <p class="text-xs text-red-600">$<?= number_format($stats['overdue_amount'] ?? 0, 2) ?></p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="<?= url('/debts/overdue') ?>" class="text-sm text-red-600 hover:text-red-800">Eeg faahfaahinta →</a>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Paid This Month
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?= number_format($stats['paid_this_month'] ?? 0) ?>
-                            </div>
-                            <div class="text-xs text-success">
-                                $<?= number_format($stats['paid_amount_this_month'] ?? 0, 2) ?>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
                     </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">La bixiyay Bishaan</p>
+                    <p class="text-2xl font-bold text-green-600"><?= number_format($stats['paid_this_month'] ?? 0) ?></p>
+                    <p class="text-xs text-green-600">$<?= number_format($stats['paid_amount_this_month'] ?? 0, 2) ?></p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">
-                <i class="fas fa-filter"></i> Search & Filter Debts
-            </h6>
-        </div>
-        <div class="card-body">
-            <form method="GET" action="<?= url('/debts') ?>">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="search" class="small font-weight-bold">Search</label>
-                            <input type="text" 
-                                   id="search" 
-                                   name="search" 
-                                   class="form-control" 
-                                   value="<?= htmlspecialchars($filters['search'] ?? '') ?>"
-                                   placeholder="Debt number, customer name...">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="status" class="small font-weight-bold">Status</label>
-                            <select id="status" name="status" class="form-control">
-                                <option value="">All Statuses</option>
-                                <option value="unpaid" <?= ($filters['status'] ?? '') === 'unpaid' ? 'selected' : '' ?>>Unpaid</option>
-                                <option value="partially_paid" <?= ($filters['status'] ?? '') === 'partially_paid' ? 'selected' : '' ?>>Partially Paid</option>
-                                <option value="paid" <?= ($filters['status'] ?? '') === 'paid' ? 'selected' : '' ?>>Paid</option>
-                                <option value="overdue" <?= ($filters['status'] ?? '') === 'overdue' ? 'selected' : '' ?>>Overdue</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="customer" class="small font-weight-bold">Customer</label>
-                            <select id="customer" name="customer_id" class="form-control">
-                                <option value="">All Customers</option>
-                                <?php if (!empty($customers)): ?>
-                                    <?php foreach ($customers as $customer): ?>
-                                        <option value="<?= $customer['id'] ?>" <?= ($filters['customer_id'] ?? '') == $customer['id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($customer['full_name']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label class="small font-weight-bold d-block">&nbsp;</label>
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-search"></i> Search
-                            </button>
-                            <?php if (!empty(array_filter($filters ?? []))): ?>
-                                <a href="<?= url('/debts') ?>" class="btn btn-secondary btn-sm btn-block mt-1">
-                                    <i class="fas fa-times"></i> Clear
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+            <i class="fas fa-filter mr-2"></i>Raadi & Kala Sooc Deynta
+        </h3>
+        <form method="GET" action="<?= url('/debts') ?>" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-700">Raadi</label>
+                    <input type="text" 
+                           id="search" 
+                           name="search" 
+                           value="<?= htmlspecialchars($filters['search'] ?? '') ?>"
+                           placeholder="Lambarka deynta, magaca macmiilka..."
+                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
-            </form>
-        </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Xaalada</label>
+                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Dhammaan Xaaladaha</option>
+                        <option value="unpaid" <?= ($filters['status'] ?? '') === 'unpaid' ? 'selected' : '' ?>>Aan la bixin</option>
+                        <option value="partially_paid" <?= ($filters['status'] ?? '') === 'partially_paid' ? 'selected' : '' ?>>Qayb la bixiyay</option>
+                        <option value="paid" <?= ($filters['status'] ?? '') === 'paid' ? 'selected' : '' ?>>La bixiyay</option>
+                        <option value="overdue" <?= ($filters['status'] ?? '') === 'overdue' ? 'selected' : '' ?>>Dhacay</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="customer" class="block text-sm font-medium text-gray-700">Macmiilka</label>
+                    <select id="customer" name="customer_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Dhammaan Macaamiisha</option>
+                        <?php if (!empty($customers)): ?>
+                            <?php foreach ($customers as $customer): ?>
+                                <option value="<?= $customer['id'] ?>" <?= ($filters['customer_id'] ?? '') == $customer['id'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($customer['full_name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+                <div class="flex items-end space-x-2">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-search mr-2"></i>Raadi
+                    </button>
+                    <?php if (!empty(array_filter($filters ?? []))): ?>
+                        <a href="<?= url('/debts') ?>" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                            <i class="fas fa-times mr-2"></i>Nadiifi
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- Debts Table -->
     <?php if (empty($debts)): ?>
-        <div class="card shadow mb-4">
-            <div class="card-body text-center py-5">
-                <div class="mb-4">
-                    <i class="fas fa-file-invoice fa-4x text-gray-300"></i>
-                </div>
-                <h3 class="h4 text-gray-900 mb-2">No debts found</h3>
-                <p class="text-muted mb-4">Start by recording your first customer debt or adjust your search filters.</p>
-                <?php if (isAdmin() || isStaff()): ?>
-                    <a href="<?= url('/debts/create') ?>" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Record First Debt
-                    </a>
-                <?php endif; ?>
+        <div class="bg-white rounded-lg shadow p-12 text-center">
+            <div class="mb-4">
+                <i class="fas fa-file-invoice text-4xl text-gray-300"></i>
             </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Deyn ma jiro</h3>
+            <p class="text-gray-500 mb-4">Ku bilow diiwaangelinta deynta macmiilka koowaad ama ku hagaaji sharuudaha raadinta.</p>
+            <?php if (isAdmin() || isStaff()): ?>
+                <a href="<?= url('/debts/create') ?>" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>Diiwaan geli Deynta Kowaad
+                </a>
+            <?php endif; ?>
         </div>
     <?php else: ?>        
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list"></i> Debts List 
-                            <span class="badge badge-secondary ml-2"><?= count($debts) ?></span>
-                        </h6>
-                    </div>
-                    <div class="col-auto">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                                <i class="fas fa-sort"></i> Sort
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="<?= url('/debts?sort=due_date') ?>">By Due Date</a>
-                                <a class="dropdown-item" href="<?= url('/debts?sort=amount') ?>">By Amount</a>
-                                <a class="dropdown-item" href="<?= url('/debts?sort=customer') ?>">By Customer</a>
-                                <a class="dropdown-item" href="<?= url('/debts?sort=status') ?>">By Status</a>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">
+                    <i class="fas fa-list mr-2"></i>Liiska Deynta 
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 ml-2"><?= count($debts) ?></span>
+                </h3>
+                <div class="relative">
+                    <select onchange="window.location.href=this.value" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="<?= url('/debts?sort=due_date') ?>">Ku kala sooc taariikhda</option>
+                        <option value="<?= url('/debts?sort=amount') ?>">Ku kala sooc lacagta</option>
+                        <option value="<?= url('/debts?sort=customer') ?>">Ku kala sooc macmiilka</option>
+                        <option value="<?= url('/debts?sort=status') ?>">Ku kala sooc xaalada</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-2 top-3 text-gray-400 text-xs"></i>
                 </div>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="border-0">
-                                    <i class="fas fa-hashtag"></i> Debt Details
-                                </th>
-                                <th class="border-0">
-                                    <i class="fas fa-user"></i> Customer
-                                </th>
-                                <th class="border-0">
-                                    <i class="fas fa-dollar-sign"></i> Amount
-                                </th>
-                                <th class="border-0">
-                                    <i class="fas fa-calendar"></i> Due Date
-                                </th>
-                                <th class="border-0">
-                                    <i class="fas fa-info-circle"></i> Status
-                                </th>
-                                <th class="border-0 text-center">
-                                    <i class="fas fa-cogs"></i> Actions
-                                </th>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-hashtag mr-1"></i>Faahfaahinta Deynta
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-user mr-1"></i>Macmiilka
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-dollar-sign mr-1"></i>Lacagta
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-calendar mr-1"></i>Taariikhda Bixinta
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-info-circle mr-1"></i>Xaalada
+                            </th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <i class="fas fa-cogs mr-1"></i>Ficilada
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <?php foreach ($debts as $debt): ?>
+                            <?php
+                            $isOverdue = strtotime($debt['due_date']) < time() && $debt['status'] !== 'paid';
+                            $remainingAmount = $debt['remaining_amount'] ?? ($debt['original_amount'] - ($debt['paid_amount'] ?? 0));
+                            $progressPercent = $debt['original_amount'] > 0 ? (($debt['original_amount'] - $remainingAmount) / $debt['original_amount']) * 100 : 0;
+                            ?>
+                            <tr class="hover:bg-gray-50 <?= $isOverdue ? 'bg-red-50' : '' ?>">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <div class="h-10 w-10 <?= $isOverdue ? 'bg-red-600' : 'bg-blue-600' ?> rounded-full flex items-center justify-center text-white">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-blue-600">
+                                                <a href="<?= url('/debts/' . $debt['id']) ?>" class="hover:text-blue-800">
+                                                    <?= htmlspecialchars($debt['debt_number']) ?>
+                                                </a>
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                La sameeyay: <?= date('M j, Y', strtotime($debt['debt_date'])) ?>
+                                            </div>
+                                            <?php if (!empty($debt['description'])): ?>
+                                                <div class="text-xs text-gray-400 mt-1" title="<?= htmlspecialchars($debt['description']) ?>">
+                                                    <i class="fas fa-comment mr-1"></i>
+                                                    <?= htmlspecialchars(substr($debt['description'], 0, 30)) ?>
+                                                    <?= strlen($debt['description']) > 30 ? '...' : '' ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <a href="<?= url('/customers/' . $debt['customer_id']) ?>" class="hover:text-blue-600">
+                                            <?= htmlspecialchars($debt['customer_name']) ?>
+                                        </a>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        <i class="fas fa-id-badge mr-1"></i><?= htmlspecialchars($debt['customer_code']) ?>
+                                    </div>
+                                    <?php if (!empty($debt['customer_phone'])): ?>
+                                        <div class="text-sm text-gray-500">
+                                            <i class="fas fa-phone mr-1"></i>
+                                            <a href="tel:<?= htmlspecialchars($debt['customer_phone']) ?>" class="hover:text-blue-600">
+                                                <?= htmlspecialchars($debt['customer_phone']) ?>
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-lg font-bold <?= $remainingAmount > 0 ? 'text-red-600' : 'text-green-600' ?>">
+                                        $<?= number_format($remainingAmount, 2) ?>
+                                    </div>
+                                    <?php if ($remainingAmount < $debt['original_amount']): ?>
+                                        <div class="text-sm text-gray-500">
+                                            oo ka mid ah $<?= number_format($debt['original_amount'], 2) ?>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                            <div class="<?= $progressPercent == 100 ? 'bg-green-500' : 'bg-yellow-500' ?> h-2 rounded-full" style="width: <?= $progressPercent ?>%"></div>
+                                        </div>
+                                        <div class="text-xs text-green-600 mt-1">
+                                            <?= number_format($progressPercent, 1) ?>% la bixiyay
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <?= date('M j, Y', strtotime($debt['due_date'])) ?>
+                                    </div>
+                                    <?php if ($isOverdue): ?>
+                                        <div class="text-sm text-red-600">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                                            <?= ceil(abs((strtotime($debt['due_date']) - time()) / (24 * 60 * 60))) ?> maalin dhacay
+                                        </div>
+                                    <?php else: ?>
+                                        <?php 
+                                        $daysUntilDue = ceil((strtotime($debt['due_date']) - time()) / (24 * 60 * 60));
+                                        if ($daysUntilDue <= 7 && $daysUntilDue > 0 && $debt['status'] !== 'paid'): 
+                                        ?>
+                                            <div class="text-sm text-orange-600">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                Dhawaan <?= $daysUntilDue ?> maalin
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <?php if ($isOverdue): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i>Dhacay
+                                        </span>
+                                    <?php elseif ($debt['status'] === 'paid'): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>La bixiyay
+                                        </span>
+                                    <?php elseif ($debt['status'] === 'partially_paid'): ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-clock mr-1"></i>Qayb la bixiyay
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-minus-circle mr-1"></i>Aan la bixin
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center space-x-2">
+                                        <a href="<?= url('/debts/' . $debt['id']) ?>" 
+                                           class="text-blue-600 hover:text-blue-900" 
+                                           title="Eeg Faahfaahinta">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <?php if ($debt['status'] !== 'paid' && (isAdmin() || isStaff())): ?>
+                                            <button onclick="showPaymentModal(<?= $debt['id'] ?>, '<?= htmlspecialchars($debt['debt_number']) ?>', <?= $remainingAmount ?>)" 
+                                                    class="text-green-600 hover:text-green-900" 
+                                                    title="Ku dar Lacag bixin">
+                                                <i class="fas fa-plus-circle"></i>
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if (isAdmin()): ?>
+                                            <a href="<?= url('/debts/' . $debt['id'] . '/edit') ?>" 
+                                               class="text-orange-600 hover:text-orange-900" 
+                                               title="Wax ka beddel">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
+                        <?php endforeach; ?>
                             <?php foreach ($debts as $debt): ?>
                                 <?php
                                 $isOverdue = strtotime($debt['due_date']) < time() && $debt['status'] !== 'paid';
@@ -388,179 +478,18 @@
                                                 </a>
                                             <?php endif; ?>
                                         </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <!-- Pagination -->
-        <?php if ($pagination['total_pages'] > 1): ?>
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">
-                        Showing <?= (($pagination['current_page'] - 1) * $pagination['per_page']) + 1 ?> 
-                        to <?= min($pagination['current_page'] * $pagination['per_page'], $pagination['total_items']) ?> 
-                        of <?= $pagination['total_items'] ?> debts
-                    </small>
-                </div>
-                <nav>
-                    <ul class="pagination mb-0">
-                        <?php if ($pagination['current_page'] > 1): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="<?= url('/debts?page=' . ($pagination['current_page'] - 1)) ?>">
-                                    <i class="fas fa-angle-left"></i> Previous
-                                </a>
-                            </li>
-                        <?php endif; ?>
-
-                        <?php for ($i = max(1, $pagination['current_page'] - 2); $i <= min($pagination['total_pages'], $pagination['current_page'] + 2); $i++): ?>
-                            <li class="page-item <?= $i == $pagination['current_page'] ? 'active' : '' ?>">
-                                <a class="page-link" href="<?= url('/debts?page=' . $i) ?>">
-                                    <?= $i ?>
-                                </a>
-                            </li>
-                        <?php endfor; ?>
-
-                        <?php if ($pagination['current_page'] < $pagination['total_pages']): ?>
-                            <li class="page-item">
-                                <a class="page-link" href="<?= url('/debts?page=' . ($pagination['current_page'] + 1)) ?>">
-                                    Next <i class="fas fa-angle-right"></i>
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                    </ul>
-                </nav>
-            </div>
-        <?php endif; ?>
     <?php endif; ?>
 </div>
 
-<!-- Enhanced Payment Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-credit-card"></i> Record Payment
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <form id="paymentForm" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="_token" value="<?= csrf_token() ?>">
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold">Debt Number</label>
-                                <input type="text" id="modalDebtNumber" readonly class="form-control-plaintext bg-light p-2 rounded">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold">Outstanding Amount</label>
-                                <div class="h5 text-danger">$<span id="modalMaxAmount"></span></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="modalPaymentAmount" class="font-weight-bold">Payment Amount <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">$</span>
-                                    </div>
-                                    <input type="number" 
-                                           name="payment_amount" 
-                                           id="modalPaymentAmount"
-                                           step="0.01" 
-                                           min="0" 
-                                           required 
-                                           class="form-control">
-                                </div>
-                                <small class="text-muted">Enter amount to pay (maximum outstanding amount)</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="paymentMethod" class="font-weight-bold">Payment Method <span class="text-danger">*</span></label>
-                                <select name="payment_method" id="paymentMethod" class="form-control" required>
-                                    <option value="">Select Method</option>
-                                    <option value="cash">💵 Cash</option>
-                                    <option value="credit">💳 Credit Card</option>
-                                    <option value="debit">💳 Debit Card</option>
-                                    <option value="bank_transfer">🏦 Bank Transfer</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="paymentNotes" class="font-weight-bold">Payment Notes</label>
-                        <textarea name="notes" 
-                                  id="paymentNotes"
-                                  rows="3" 
-                                  class="form-control"
-                                  placeholder="Optional notes about this payment..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check"></i> Record Payment
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<script>
-function showPaymentModal(debtId, debtNumber, remainingAmount) {
-    document.getElementById('modalDebtNumber').value = debtNumber;
-    document.getElementById('modalMaxAmount').textContent = remainingAmount.toFixed(2);
-    document.getElementById('modalPaymentAmount').max = remainingAmount;
-    document.getElementById('modalPaymentAmount').value = remainingAmount; // Pre-fill with full amount
-    document.getElementById('paymentForm').action = '<?= url('/debts') ?>/' + debtId + '/payment';
-    $('#paymentModal').modal('show');
-}
-
-// Form validation
-document.getElementById('paymentForm').addEventListener('submit', function(e) {
-    const amount = parseFloat(document.getElementById('modalPaymentAmount').value);
-    const maxAmount = parseFloat(document.getElementById('modalMaxAmount').textContent);
-    
-    if (amount > maxAmount) {
-        e.preventDefault();
-        alert('Payment amount cannot exceed the outstanding debt amount.');
-        return false;
-    }
-    
-    if (amount <= 0) {
-        e.preventDefault();
-        alert('Payment amount must be greater than zero.');
-        return false;
-    }
-});
-
-// Auto-format currency input
-document.getElementById('modalPaymentAmount').addEventListener('input', function() {
-    let value = this.value;
-    if (value.includes('.')) {
-        let parts = value.split('.');
-        if (parts[1].length > 2) {
-            this.value = parts[0] + '.' + parts[1].substring(0, 2);
-        }
-    }
-});
-</script>
+<?php
+$content = ob_get_clean();
+include APP_ROOT . '/app/views/layouts/app.php';
+?>

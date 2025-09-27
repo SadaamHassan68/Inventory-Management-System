@@ -299,6 +299,11 @@ function getErrors($key = null) {
     return $_SESSION['errors'] ?? [];
 }
 
+function getError($key) {
+    $errors = getErrors($key);
+    return !empty($errors) ? $errors[0] : '';
+}
+
 function setErrors($errors) {
     $_SESSION['errors'] = $errors;
 }
